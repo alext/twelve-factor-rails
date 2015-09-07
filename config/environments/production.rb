@@ -53,6 +53,7 @@ Rails.application.configure do
 
   # Use a different logger for distributed setups.
   # config.logger = ActiveSupport::TaggedLogging.new(SyslogLogger.new)
+  config.logger = ActiveSupport::TaggedLogging.new(Logger.new($stderr))
 
   # Use a different cache store in production.
   # config.cache_store = :mem_cache_store
@@ -72,5 +73,11 @@ Rails.application.configure do
   config.active_support.deprecation = :notify
 
   # Use default logging formatter so that PID and timestamp are not suppressed.
-  config.log_formatter = ::Logger::Formatter.new
+  #config.log_formatter = ::Logger::Formatter.new
+
+  $real_stdout = $stdout.clone
+  $stdout.reopen($stderr)
+  config.logstasher.enabled = true
+  config.logstasher.logger = Logger.new($real_stdout)
+  config.logstasher.suppress_app_log = true
 end
